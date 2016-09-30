@@ -8,6 +8,9 @@ DIR=${1:-$(pwd)}  # directory that contains the git repo w/ tags
 
 pushd ${DIR} 1> /dev/null
 
+# Workaround concourse issue
+git fetch --tags
+
 GIT_VERSION=$(git describe --always --tags --long)
 PROJECT=$(basename $(pwd))
 SHA256=$(echo "${PROJECT}${GIT_VERSION}" | sha256sum | awk '{ print $1 }')
