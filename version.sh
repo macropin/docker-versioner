@@ -7,7 +7,9 @@ set -e
 DIR=${1:-$(pwd)}  # directory that contains the git repo
 pushd ${DIR} 1> /dev/null
 
-if [ "$2" == "continuous" ]; then
+MODE=${2:-$MODE}
+
+if [ "$MODE" == "continuous" ]; then
     GIT_VERSION=$(git rev-parse --short HEAD)
     PROJECT=$(basename $(pwd))
     SHA256=$(echo "${PROJECT}" | sha256sum | awk '{ print $1 }')
