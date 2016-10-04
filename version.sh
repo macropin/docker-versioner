@@ -10,7 +10,7 @@ pushd ${DIR} 1> /dev/null
 if [ "$2" == "continuous" ]; then
     GIT_VERSION=$(git rev-parse --short HEAD)
     PROJECT=$(basename $(pwd))
-    SHA256=$(echo "${PROJECT}${GIT_VERSION}" | sha256sum | awk '{ print $1 }')
+    SHA256=$(echo "${PROJECT}" | sha256sum | awk '{ print $1 }')
     BUILDID=$(curl -s https://buildids.panubo.vgrd.net/id/${SHA256})
     VERSION="${GIT_VERSION}-${BUILDID}"
 else
