@@ -1,21 +1,25 @@
 #!/usr/bin/env bash
 
-# Generate Build Version from buildids service and git tag
+# Generate Build Version from buildids service and git tag or hash
 
 set -e
 
-DIR=${1:-$(pwd)}  # directory that contains the git repo w/ tags
-
+DIR=${1:-$(pwd)}  # directory that contains the git repo
 pushd ${DIR} 1> /dev/null
 
-# Workaround concourse issue
-git fetch --tags
-
-GIT_VERSION=$(git describe --always --tags --long)
-PROJECT=$(basename $(pwd))
-SHA256=$(echo "${PROJECT}${GIT_VERSION}" | sha256sum | awk '{ print $1 }')
-BUILDID=$(curl -s https://buildids.panubo.vgrd.net/id/${SHA256})
-VERSION="${GIT_VERSION}-${BUILDID}"
+if [ "$2" == "continuous" ]; then
+    GIT_VERSION=$(git rev-parse --short HEAD)
+    PROJECT=$(basename $(pwd))
+    SHA256=$(echo "${PROJECT}${GIT_VERSION}" | sha256sum | awk '{ print $1 }')
+    BUILDID=$(curl -s https://buildids.panubo.vgrd.net/id/${SHA256})
+    VERSION="${GIT_VERSION}-${BUILDID}"
+else
+    GIT_VERSION=$(git describe --always --tags --long)
+    PROJECT=$(basename $(pwd))
+    SHA256=$(echo "${PROJECT}${GIT_VERSION}" | sha256sum | awk '{ print $1 }')
+    BUILDID=$(curl -s https://buildids.panubo.vgrd.net/id/${SHA256})
+    VERSION="${GIT_VERSION}-${BUILDID}"
+fi
 
 popd 1> /dev/null
 
